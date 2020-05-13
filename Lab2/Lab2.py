@@ -8,32 +8,7 @@ default_eps2 = 1e-4
 
 lab_result = open("Lab2\\lab_result.md", "w+")
 
-lab_result.write("# lab2 results\n")
-lab_result.write("\n")
-
-def log_format(log_value):
-    if isinstance(log_value, list):
-        r = ""
-        for value in log_value:
-            r += log_format(value)
-        return r
-    else:
-        b, v = log_value
-        if b:
-            return str(v)+'\n'
-        else:
-            return 'NaN\n'
-
-
-
-def lab_log(key, value):
-    global lab_result
-
-    lab_result.write("## "+key+"\n")
-    lab_result.write("\n")
-    lab_result.write(log_format(value)+"\n")
-
-
+# 失败代码 1：超出迭代次数；0：计算失败
 def newton_iteration_method(alpha, epsilon1, epsilon2, N, f, df):
     x_this = alpha
     x_next = 0.0
@@ -48,7 +23,31 @@ def newton_iteration_method(alpha, epsilon1, epsilon2, N, f, df):
         if abs(x_next-x_this) < epsilon1:
             return True, x_next
         x_this = x_next
-    return False, 0.0
+    return False, 1.0
+
+lab_result.write("# lab2 results\n")
+lab_result.write("\n")
+
+def log_format(log_value):
+    if isinstance(log_value, list):
+        r = ""
+        for value in log_value:
+            r += log_format(value)
+        return r
+    else:
+        b, v = log_value
+        if b:
+            return str(v)+'\n'
+        else:
+            return 'Failed: '+str(floor(v))+'\n'
+
+
+def lab_log(key, value):
+    global lab_result
+
+    lab_result.write("## "+key+"\n")
+    lab_result.write("\n")
+    lab_result.write(log_format(value)+"\n")
 
 
 def f11(x): return cos(x)-x
@@ -202,10 +201,10 @@ class polynomial:
         return r
 
 
-def generate_polynomial(size, gen_coe0, gen_coe1, gen_coe2):
+def generate_polynomial(size, P1, gen_coe0, gen_coe1, gen_coe2):
     P = [
         polynomial(np.asarray([Fraction(1)], dtype=Fraction)),
-        polynomial(np.asarray([Fraction(0), Fraction(1)], dtype=Fraction))
+        P1
     ]
     for i in range(0, size-1):
         P.append(P[i+1]*gen_coe0(i)+P[i+1].mulx()
@@ -233,6 +232,7 @@ def generate_luminus_element(origin_list):
 # Legendre
 P = generate_polynomial(
     6,
+    polynomial(np.asarray([Fraction(0), Fraction(1)], dtype=Fraction)),
     lambda i: Fraction(0),
     lambda i: Fraction((2*i+3), (i+2)),
     lambda i: Fraction((i+1), (i+2))
@@ -246,17 +246,19 @@ alpha_legendre = generate_luminus_element(
 
 T = generate_polynomial(
     6,
+    polynomial(np.asarray([Fraction(0), Fraction(1)], dtype=Fraction)),
     lambda i: Fraction(0),
     lambda i: Fraction(2),
     lambda i: Fraction(1)
 )
 
-alpha_chebyshev = [cos((2*j+1)/(14)*pi) for j in range(0, 7)]
+alpha_chebyshev = [cos((2*j+1)*pi/(14)) for j in range(0, 7)]
 
 # Laguerre
 
 L = generate_polynomial(
     6,
+    polynomial(np.asarray([Fraction(1), Fraction(-1)], dtype=Fraction)),
     lambda i: Fraction(2*i+3),
     lambda i: Fraction(-1),
     lambda i: Fraction((i+1)**2)
@@ -269,6 +271,7 @@ alpha_laguerre = [0.2635603197, 1.4134030591,
 
 H = generate_polynomial(
     6,
+    polynomial(np.asarray([Fraction(0), Fraction(1)], dtype=Fraction)),
     lambda i: Fraction(0),
     lambda i: Fraction(2),
     lambda i: Fraction(2*(i+1))
