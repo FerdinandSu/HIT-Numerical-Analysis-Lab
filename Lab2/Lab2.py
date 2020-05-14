@@ -1,14 +1,18 @@
 import numpy as np
 from math import *
 from fractions import Fraction
-import fractions
+from pyLabOn import Report
+import pypandoc
 
 default_eps1 = 1e-6
 default_eps2 = 1e-4
+lab_result_path = "Lab2\\lab_result.md"
 
-lab_result = open("Lab2\\lab_result.md", "w+")
+lab_result = Report("Lab2 Result","Lab2")
 
 # 失败代码 1：超出迭代次数；0：计算失败
+
+
 def newton_iteration_method(alpha, epsilon1, epsilon2, N, f, df):
     x_this = alpha
     x_next = 0.0
@@ -25,29 +29,36 @@ def newton_iteration_method(alpha, epsilon1, epsilon2, N, f, df):
         x_this = x_next
     return False, 1.0
 
-lab_result.write("# lab2 results\n")
-lab_result.write("\n")
 
 def log_format(log_value):
     if isinstance(log_value, list):
-        r = ""
+        r = []
         for value in log_value:
             r += log_format(value)
         return r
     else:
         b, v = log_value
         if b:
-            return str(v)+'\n\n'
+            return [[str(v)]]
         else:
-            return 'Failed: '+str(floor(v))+'\n\n'
+            return [['Failed: '+str(floor(v))]]
 
 
 def lab_log(key, value):
     global lab_result
+    para = lab_result.add_sub_paragraph(key)
+    para.add_table(["results"], log_format(value))
+    return para
 
-    lab_result.write("## "+key+"\n")
-    lab_result.write("\n")
-    lab_result.write(log_format(value)+"\n")
+
+def lab_log2(key, value, name,prefix,P):
+    para=lab_log(key,value)
+    para=para.add_sub_paragraph(name+"Polynomial")
+    index = 0
+    for p in P:
+        para.add_plain_content(
+            "$$\n"+prefix+"_{"+str(index)+"}(x)="+repr(p)+"\n$$\n")
+        index += 1
 
 
 def f11(x): return cos(x)-x
@@ -211,17 +222,6 @@ def generate_polynomial(size, P1, gen_coe0, gen_coe1, gen_coe2):
                  * gen_coe1(i)-(P[i]*gen_coe2(i)))
     return P
 
-
-def generate_polynomial_md(name, prefix, P):
-    global lab_result
-    #f = open('lab2\\'+name+'.md', "w+")
-    lab_result.write("## "+name+" Polynomial\n\n")
-    index = 0
-    for p in P:
-        lab_result.write("$$\n"+prefix+"_{"+str(index)+"}(x)="+repr(p)+"\n$$\n\n")
-        index += 1
-    
-
 # 根据给定列表生成关于原点对称的区间
 
 
@@ -313,8 +313,7 @@ lab_log(
 # Part 3
 
 
-
-lab_log(
+lab_log2(
     "Part 3.1",
     [
         newton_iteration_method(
@@ -322,13 +321,14 @@ lab_log(
             6, P[6], P[6].get_derivative()
         )
         for alpha in alpha_legendre
-    ]
+    ],
+    "Legendre", 'P', P
 )
 
-generate_polynomial_md("Legendre", 'P', P)
 
 
-lab_log(
+
+lab_log2(
     "Part 3.2",
     [
         newton_iteration_method(
@@ -336,15 +336,15 @@ lab_log(
             6, T[6], T[6].get_derivative()
         )
         for alpha in alpha_chebyshev
-    ]
+    ],
+    "Chebyshev", 'T', T
 )
 
 
-generate_polynomial_md("Chebyshev", 'T', T)
 
 
 
-lab_log(
+lab_log2(
     "Part 3.3",
     [
         newton_iteration_method(
@@ -352,13 +352,12 @@ lab_log(
             6, L[6], L[6].get_derivative()
         )
         for alpha in alpha_laguerre
-    ]
+    ],
+    "Laguerre", 'L', L
 )
 
-generate_polynomial_md("Laguerre", 'L', L)
 
-
-lab_log(
+lab_log2(
     "Part 3.4",
     [
         newton_iteration_method(
@@ -366,9 +365,11 @@ lab_log(
             6, H[6], H[6].get_derivative()
         )
         for alpha in alpha_hermite
-    ]
+    ],
+    "Hermite", 'H', H
 )
 
-generate_polynomial_md("Hermite", 'H', H)
 
-lab_result.close()
+lab_result.save_to_file()
+
+lab_result.compile()
