@@ -37,9 +37,9 @@ def log_format(log_value):
     else:
         b, v = log_value
         if b:
-            return str(v)+'\n'
+            return str(v)+'\n\n'
         else:
-            return 'Failed: '+str(floor(v))+'\n'
+            return 'Failed: '+str(floor(v))+'\n\n'
 
 
 def lab_log(key, value):
@@ -213,13 +213,14 @@ def generate_polynomial(size, P1, gen_coe0, gen_coe1, gen_coe2):
 
 
 def generate_polynomial_md(name, prefix, P):
-    f = open('lab2\\'+name+'.md', "w+")
-    f.write("# "+name+"\n\n")
+    global lab_result
+    #f = open('lab2\\'+name+'.md', "w+")
+    lab_result.write("## "+name+" Polynomial\n\n")
     index = 0
     for p in P:
-        f.write("$$\n"+prefix+"_{"+str(index)+"}(x)="+repr(p)+"\n$$\n\n")
+        lab_result.write("$$\n"+prefix+"_{"+str(index)+"}(x)="+repr(p)+"\n$$\n\n")
         index += 1
-    f.close()
+    
 
 # 根据给定列表生成关于原点对称的区间
 
@@ -311,7 +312,7 @@ lab_log(
 
 # Part 3
 
-generate_polynomial_md("Legendre", 'P', P)
+
 
 lab_log(
     "Part 3.1",
@@ -324,7 +325,8 @@ lab_log(
     ]
 )
 
-generate_polynomial_md("Chebyshev", 'T', T)
+generate_polynomial_md("Legendre", 'P', P)
+
 
 lab_log(
     "Part 3.2",
@@ -337,7 +339,10 @@ lab_log(
     ]
 )
 
-generate_polynomial_md("Laguerre", 'L', L)
+
+generate_polynomial_md("Chebyshev", 'T', T)
+
+
 
 lab_log(
     "Part 3.3",
@@ -350,7 +355,8 @@ lab_log(
     ]
 )
 
-generate_polynomial_md("Hermite", 'H', H)
+generate_polynomial_md("Laguerre", 'L', L)
+
 
 lab_log(
     "Part 3.4",
@@ -362,5 +368,7 @@ lab_log(
         for alpha in alpha_hermite
     ]
 )
+
+generate_polynomial_md("Hermite", 'H', H)
 
 lab_result.close()
