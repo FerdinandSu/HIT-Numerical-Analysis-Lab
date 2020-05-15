@@ -91,7 +91,7 @@ alpha21 = 0.5
 def f22(x): return x*x-2*x*exp(-x)+exp(-2*x)
 
 
-def df22(x): return 2*x-(2*x-2)*exp(-x)-2*exp(-2*x)
+def df22(x): return 2*x+(2*x-2)*exp(-x)-2*exp(-2*x)
 
 
 alpha22 = 0.5
@@ -162,8 +162,10 @@ class polynomial:
             if c == 0:
                 index += 1
                 continue
-            if flag:
-                r += '+' if c >= 0 else '-'
+            if c<0:
+                r+='-';
+            elif flag:
+                r+='+'
             if c != Fraction(1) or index == 0:
                 r += str(abs(c.numerator)) if c.denominator == 1 else'\\frac{'+str(
                     abs(c.numerator))+"}{"+str(c.denominator)+"}"
@@ -272,7 +274,7 @@ alpha_laguerre = [0.2635603197, 1.4134030591,
 
 H = generate_polynomial(
     6,
-    polynomial(np.asarray([Fraction(0), Fraction(1)], dtype=Fraction)),
+    polynomial(np.asarray([Fraction(0), Fraction(2)], dtype=Fraction)),
     lambda i: Fraction(0),
     lambda i: Fraction(2),
     lambda i: Fraction(2*(i+1))
@@ -368,8 +370,5 @@ lab_log2(
     ],
     "Hermite", 'H', H
 )
-
-
-lab_result.save_to_file()
 
 lab_result.compile("xelatex",'SarasaMono T TC')
