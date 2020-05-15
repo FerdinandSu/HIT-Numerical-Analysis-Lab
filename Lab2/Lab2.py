@@ -372,4 +372,4 @@ lab_log2(
 
 lab_result.save_to_file()
 
-lab_result.compile()
+lab_result.compile("xelatex",'SarasaMono T TC')
