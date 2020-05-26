@@ -78,7 +78,7 @@ data.append(
 data.append(
     lab_log(2,
             romberg_integral(
-                (3, 1), 100, default_eps, f2)
+                (1,3), 100, default_eps, f2)
             )
 )
 
